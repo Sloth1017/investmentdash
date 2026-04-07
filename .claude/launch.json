@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Investment Dashboard",
+      "runtimeExecutable": "/Users/gregpolinger/.bun/bin/bun",
+      "runtimeArgs": ["run", "dev", "--port", "3101"],
+      "port": 3101,
+      "cwd": "/Users/gregpolinger/.claude/worktrees/agent-a71f3ce6/investment-dashboard"
+    }
+  ]
+}
