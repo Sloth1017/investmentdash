@@ -4,7 +4,7 @@ import { TRENDS, Trend } from "@/lib/data/trends";
 import { COMPANIES } from "@/lib/data/companies";
 import { useInvestmentStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { TrendingUp, Users, Target } from "lucide-react";
+import { TrendingUp, Users, Target, CheckCircle2 } from "lucide-react";
 
 function ScoreBar({ score }: { score: number }) {
   return (
@@ -32,30 +32,37 @@ function TrendCard({ trend }: { trend: Trend }) {
   return (
     <button
       onClick={() => toggleTrend(trend.id)}
+      style={isSelected ? {
+        borderColor: trend.accentHex,
+        boxShadow: `0 0 0 1px ${trend.accentHex}40, inset 0 0 20px ${trend.accentHex}12`,
+      } : undefined}
       className={cn(
-        "w-full text-left p-3 rounded-lg border transition-all duration-150",
-        "hover:bg-gray-800/60",
+        "w-full text-left p-3 rounded-lg border-2 transition-all duration-150",
         isSelected
-          ? "bg-gray-800 border-gray-600 ring-1 ring-gray-500"
-          : "bg-gray-900/60 border-gray-800"
+          ? "bg-gray-800 border-transparent"
+          : "bg-gray-900/60 border-gray-800 hover:border-gray-700 hover:bg-gray-800/40"
       )}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
-          <div className={cn("w-2 h-2 rounded-full flex-shrink-0 mt-0.5", trend.color)} />
-          <span className="text-sm font-semibold text-gray-100 leading-tight">
+          <div className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0 mt-0.5", trend.color)} />
+          <span className={cn("text-sm font-semibold leading-tight", isSelected ? "text-white" : "text-gray-200")}>
             {trend.name}
           </span>
         </div>
-        <span
-          className={cn(
-            "text-xs font-mono font-bold px-1.5 py-0.5 rounded",
-            trend.bgColor,
-            trend.textColor
+        <div className="flex items-center gap-1.5">
+          {isSelected && (
+            <CheckCircle2 className={cn("w-3.5 h-3.5 flex-shrink-0", trend.textColor)} />
           )}
-        >
-          {trend.composite_score.toFixed(1)}
-        </span>
+          <span
+            className={cn(
+              "text-xs font-mono font-bold px-1.5 py-0.5 rounded",
+              isSelected ? cn(trend.bgColor, trend.textColor) : "bg-gray-800 text-gray-400"
+            )}
+          >
+            {trend.composite_score.toFixed(1)}
+          </span>
+        </div>
       </div>
 
       <p className="text-xs text-gray-500 mb-3 leading-relaxed">
@@ -93,7 +100,7 @@ function TrendCard({ trend }: { trend: Trend }) {
 }
 
 export function TrendsPanel() {
-  const { selectedTrends } = useInvestmentStore();
+  const { selectedTrends, toggleTrend } = useInvestmentStore();
   const sortedTrends = [...TRENDS].sort(
     (a, b) => b.composite_score - a.composite_score
   );
@@ -107,11 +114,16 @@ export function TrendsPanel() {
             <TrendingUp className="w-4 h-4 text-violet-400" />
             <h2 className="text-sm font-semibold text-gray-200">Trends</h2>
           </div>
-          <span className="text-xs text-gray-500">
-            {selectedTrends.length > 0
-              ? `${selectedTrends.length} active`
-              : "Click to filter"}
-          </span>
+          {selectedTrends.length > 0 ? (
+            <button
+              onClick={() => selectedTrends.forEach((id) => toggleTrend(id))}
+              className="text-xs text-violet-400 hover:text-violet-300 underline underline-offset-2"
+            >
+              Clear {selectedTrends.length} filter{selectedTrends.length > 1 ? "s" : ""}
+            </button>
+          ) : (
+            <span className="text-xs text-gray-600">Click to filter</span>
+          )}
         </div>
       </div>
 
